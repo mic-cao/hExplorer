@@ -1,0 +1,26 @@
+Package: hExplorer
+Type: Package
+Title: Hurricane Plotter and Analyzer for R
+Version: 0.1.0
+Authors@R: 
+    person("Michael", "Cao", email = 'yc849@cornell.edu', role = c('aut', 'cre'))
+    person("Aristotle", "Kolefas", email = 'aak99@cornell.edu', role = c('aut', 'cre'))
+Maintainer: The package maintainer <yc849@cornell.edu>
+Description: Analyzes and plots hurricane data from 
+  \url{https://www.aoml.noaa.gov/hrd/hurdat/Data_Storm.html}. 
+  Produces plots of the trajectory of each storm, estimates its position at
+  arbitrary time points, and determines its approximate shape.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    maps,
+    sp
+RoxygenNote: 7.2.3
+Suggests: 
+    rmarkdown,
+    knitr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Depends: R (>= 3.5.0)
