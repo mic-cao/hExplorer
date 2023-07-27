@@ -1,0 +1,244 @@
+---
+title: "vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning = FALSE}
+library(hExplorer)
+library(maps)
+library(sp)
+```
+
+1. Plot the tracks of the storms in 2020, 2021, and 2022 in 3 separate plots. Your plots will be graded for how easy they are to decipher and how much information they display. Include, for example, some way to identify which storm each track belongs to.
+```{r}
+storms.2020 <- unique(hurdat$id[format(hurdat$datetime, "%Y") == "2020"])
+storms.2021 <- unique(hurdat$id[format(hurdat$datetime, "%Y") == "2021"])
+storms.2022 <- unique(hurdat$id[format(hurdat$datetime, "%Y") == "2022"])
+storm_track(storms.2020, show.legend = T)
+storm_track(storms.2021, show.legend = T)
+storm_track(storms.2022, show.legend = T)
+```
+
+\pagebreak 
+
+2. Plot the position and size of hurricanes Katrina (2005), Sandy (2012), Harvey (2017), and Ian (2022) when they made landfall. If there are multiple landfalls, pick the strongest landfall that occurred in the US. Include the storm tracks in your plot if you can. You can put this all on one plot if it’s not too messy.
+```{r}
+names <- c("KATRINA", "SANDY", "HARVEY", "IAN")
+years <- c("2005", "2012", "2017", "2022")
+
+for(i in 1:length(names)) 
+{
+  
+  temp <- which(endsWith(hurdat$name, names[i]) & 
+                       format(hurdat$datetime, "%Y") == years[i])
+  
+  temp <- temp[complete.cases(hurdat[temp, grepl("34|50|64",
+                                                 colnames(hurdat))])]
+
+  temp <- temp[sapply(hurdat$datetime[temp], 
+                      made_landfall, 
+                      storm_id = unique(hurdat$id[temp]))]
+  idx <- temp[which.max(hurdat$max_sustained[temp])]
+  storm_location(hurdat$id[idx], 
+                 show.track = TRUE, 
+                 time.pt = hurdat$datetime[idx])
+}
+```
+
+\pagebreak
+
+3. Create a dataframe that has one row for each individual storm, with the following columns:
+• storm id
+• storm name
+• maximum wind speed
+• minimum pressure
+• indicator for whether it made landfall or not
+• accumulated cyclone energy
+```{r}
+id <- unique(hurdat$id)
+idx <- match(id, hurdat$id)
+
+names <- hurdat$name[idx]
+max_speed <- hurdat$max_sustained[idx]
+min_pressure <- hurdat$min_pressure[idx]
+
+landfall <- sapply(id, made_landfall)
+accum_cyclone_energy <- sapply(id, function(x) tryCatch({cyclone_energy(x)}, error = function(e) {return(NA)}))
+
+output <- data.frame(id, names, max_speed, min_pressure, 
+                     landfall, accum_cyclone_energy)
+head(output)
+```
+
+\pagebreak
+
+4. Include two additional plots exploring interesting things you found in the dataset.
+```{r, warning=FALSE}
+# Plot 1: Create plots of maximum sustained wind speeds for a representative sample of storms - see if any patterns emerge
+id.by.speed <- output$id[order(output$max_speed, decreasing = T)]
+storm_track(id.by.speed[1:5])
+
+
+# Plot 2: storms that last the longest
+id <- unique(hurdat$id)
+idx <- match(id, hurdat$id)
+
+duration <- rep(NA, length(id))
+for (i in seq_along(id))
+{
+  match_id <- which(hurdat$id==id[i])
+  duration[i] <- diff(range(hurdat$datetime[match_id]))
+}
+id.by.duration <- output$id[order(duration, decreasing = T)]
+storm_track(id.by.duration[1:5])
+
+
+# Plot 3: storms that have the greatest displacement
+id <- unique(hurdat$id)
+idx <- match(id, hurdat$id)
+
+displacement <- rep(NA, length(id))
+for (i in seq_along(id))
+{
+  match_id <- which(hurdat$id==id[i])
+  range.long <- diff(range(hurdat$longitude[match_id]))
+  range.lat <- diff(range(hurdat$latitude[match_id]))
+  displacement[i] <- sqrt(range.long^2 + range.lat^2) # rough estimate
+}
+
+id.by.displacement <- output$id[order(displacement, decreasing = T)]
+storm_track(id.by.displacement[1:5]) 
+```
+
+\pagebreak
+
+5. Is the number of landfalling hurricanes increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
+
+We interpret the question as asking whether the number of hurricanes that have made landfall at least once in their trajectories (which we have termed "occurrences") is increasing from year to year. To answer this, we have decided to fit a linear model with year and average ACE (which we have termed "intensity") for all storms in that year as predictors. From a time-series graph of the data, it appears reasonable that the number of landfalling hurricanes is linearly related to the year. However, the relationship between occurrences and ACE is likely more complex. In some years, a few very powerful storms could contribute significantly to the total ACE, while other years might have more storms with lower ACE values. Atmospheric and oceanic conditions can also influence the number of landfalling hurricanes and the ACE values, further complicating the relationship between them. We tested polynomial transformations of the ACE and found that a quadratic transformation gave a reasonable fit, with all coefficients significant at the 0.01 level. Here is the model in symbols:
+
+$$
+N_{t_{i}} = \beta_{0} + \beta_{1} t_{i} + \beta_{2}(ACE_{t_{i}}) + \beta_{3} (ACE_{t_{i}})^2 + \epsilon_{t_{i}}
+$$
+Here, 
+$t_{i}$ is the ith year, where years are not necessarily in chronological order;
+$N_{t_{i}}$ is the number of occurrences in the year $t_{i}$;
+$ACE_{t_{i}}$ is the average accumulated cyclone energy in the year ${t_{i}$;
+$\beta_{0}$ is the intercept;
+$\beta_{1}$ is the slope of the variable representing the ith year;
+$\beta_{2}$ is the slope of the average ACE in the year $t_{i}$;
+$\beta_{3}$ is the slope of the squared average ACE in the year $t_{i}$;
+$\epsilon_{t_{i}} \sim\ N(0, \sigma^2)$ is the error term in the year $t_{i}$.
+
+```{r}
+id <- unique(hurdat$id)
+idx <- match(id, hurdat$id)
+datetime <- hurdat$datetime[idx]
+
+idx <- 1:nrow(output)
+landfall.2 <- sapply(output$id, made_landfall)
+occurrences <- table(format(datetime[idx[landfall.2]], "%Y"))
+model.info <- data.frame(occurrences)
+colnames(model.info) <- c('year', 'occurrences')
+
+accum_cyclone_energy <- sapply(output$id, function(x) tryCatch({cyclone_energy(x)}, error = function(e) {return(NA)}))
+model.info$intensity <- aggregate(accum_cyclone_energy,
+                              by = list(format(datetime[idx], "%Y")),
+                              FUN = mean)$x
+model.info$max_speed <- aggregate(output$max_speed,
+                              by = list(format(datetime[idx], "%Y")),
+                              FUN = mean)$x
+
+model.info$year <- as.numeric(model.info$year) + 1850
+landfall.mod <- lm(occurrences ~ year + intensity + I(intensity^2), data = model.info, na.action = na.exclude)
+summary(landfall.mod)
+```
+Given that the year covariate is significant and positive, we conclude that the number of landfalling hurricanes is increasing over time.
+
+\pagebreak 
+
+6. Is the intensity of tropical cyclones increasing over time? Define specifically what this question means to you, and do an appropriate statistical analysis to try to answer the question using the hurdat data. This involves writing down a statistical model, identifying parameters of interest, estimating them, and doing inference on them.
+
+We consider Accumulated Cyclone Energy (ACE) as a proxy for storm intensity. To test whether the intensity of storms is increasing over time, we include the year as a predictor in our regression. Other covariates that may affect ACE are the duration of the storm and the minimum pressure of a storm. Longer storms have more time to accumulate energy, particularly over warm bodies of water, and generate higher ACE values. Lower pressures indicate a more intense storm, and more intense storms achieve higher ACE values. Here is the model in symbols:
+
+$$
+ACE_{i} = \beta_{0} + \beta_{1} (D_{i}) + \beta_{2} t_{i} + \beta_{3} (P_{i}) + \epsilon_{i}
+$$
+Here, 
+$i$ represents the numbered observation of interest
+$\beta_{0}$ is the intercept;
+$\D_{i}$ is the duration of the ith storm.
+$\beta_{1}$ is the slope of the covariate representing the duration of the ith storm;
+$\beta_{2}$ is the slope of the covariate representing the year in which the ith storm began;
+$\beta_{3}$ is the slope of the covariate representing the minimum pressure of the ith storm
+$\epsilon_{i} \sim\ N(0, \sigma^2)$ is the error term for the ith storm. 
+
+```{r}
+id <- unique(hurdat$id)
+idx <- match(id, hurdat$id)
+durations <- sapply(id, function(x) {difftime(range(hurdat$datetime[hurdat$id == x])[2], range(hurdat$datetime[hurdat$id == x])[1], units = "hours")})
+model.info.2 <- cbind(output, year = as.numeric(format(hurdat$datetime[idx], "%Y")), duration = durations)
+model.info.2 <- na.omit(model.info.2)
+intensity.mod <- lm(accum_cyclone_energy ~ year + duration + min_pressure, data = model.info.2)
+summary(intensity.mod)
+```
+There is insufficient evidence that the intensity of tropical cyclones is changing with time because the p-value for the year coefficient is much larger than any commonly used significance threshold; the point estimate is slightly positive but the standard error is much larger. However, duration and minimum pressure are much more significant.
+
+\pagebreak
+
+7. Find a claim made in the media made about tropical cyclones and climate change, and check whether the claim is supported or not by your data. You should pick a claim for which your data has relevant information. Cite the media source. For fun, you can also report what ChatGPT has to say about the claim.
+
+One claim made in the media is that tropical cyclones are now 13% less frequent due to climate change. To test this, we obtained temperature anomaly data for the Earth's surface ((https://www.carbonbrief.org/tropical-cyclones-now-13-less-frequent-due-to-climate-change/). A temperature anomaly over time refers to the difference between the average temperature of a specific period and a long-term average temperature. Since the temperature anomalies have been non-negative for 1980 onward, reflecting climate change, we only used data for hurricanes that began after 1980 so that we could make a proper comparison.
+
+In symbols, our model is:
+$$
+F_{t_{i}} = \beta_{0} + \beta_{1} (TA_{t_{i}}) + \epsilon_{t_{i}}
+$$
+$i$ represents the numbered observation of interest
+$\beta_{0}$ is the intercept;
+$TA_{t_{i}}$ is the temperature anomaly at time $t_{i}$;
+$\beta_{1}$ is the slope of the covariate representing the temperature anomaly at time $t_{i}$;
+$\epsilon_{i} \sim\ N(0, \sigma^2)$ is the error term for the ith storm. 
+
+```{r}
+GTA <- read.csv("Global_Temp_Anomalies.csv")
+plot(GTA, type = "l", main = "Global Temperature Anomaly vs. Year")
+abline(h = 0)
+warming.info.3 <- model.info[model.info$year >= 1880, ]
+
+GTA.subset <- subset(GTA, Year >= 1880)
+
+warming.info.3 <- cbind(warming.info.3, temp_anomaly = GTA.subset$Temp_Anomaly)
+warming.info.3
+
+lm.warming <- lm(occurrences ~ temp_anomaly, data = warming.info.3)
+summary(lm.warming)
+
+tg1 <- 1880:1970
+tg2 <- 1980:2022
+store <- c()
+
+set.seed(4520)
+for(i in 1:1000) {
+  tp1 <- sample(tg1, 1)
+  tp2 <- sample(tg2, 1)
+  pred.1 <- predict(lm.warming, newdata = data.frame(year = tp1, temp_anomaly = GTA.subset[GTA.subset$Year == tp1, 'Temp_Anomaly']))
+  pred.2 <- predict(lm.warming, newdata = data.frame(year = tp2, temp_anomaly = GTA.subset[GTA.subset$Year == tp2, 'Temp_Anomaly']))
+  store[i] <- (pred.2 - pred.1)/pred.1
+
+}
+
+quantile(store, probs = c(0.05, 0.95))
+
+```
+The claim is not supported by our data. Our model shows that temperature anomaly has a significant positive relationship with the number of hurricanes, as the p-value is very small (1.87e-08). We also split the years into two groups -- from 1880-1970 and from 1980-2022 -- and, in each iteration, randomly selected a year from each of these groups. We computed fitted values corresponding to these years, and found the percentage difference between the predictions to see if there were more storm occurrences in the later time cluster than in the earlier one. We are 90% confident that the frequency of storms increased by between 13.61% and 77.97%, an interval that does not contain -13%. 
