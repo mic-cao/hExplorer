@@ -43,6 +43,6 @@ The package validates a media claim about tropical cyclones and climate change u
 
 ## Conclusion
 
-The Storm Tracker API R Package offers a comprehensive suite of tools for analyzing and visualizing US coastal storm data. Whether you're a researcher studying tropical cyclones or a weather enthusiast curious about storm trends, this package provides valuable insights and functionalities.
+The hExplorer Package offers a comprehensive suite of tools for analyzing and visualizing US coastal storm data. Whether you're a researcher studying tropical cyclones or a weather enthusiast curious about storm trends, this package provides valuable insights and functionalities.
 
 For detailed usage instructions and examples, please refer to the vignette included with the package.
