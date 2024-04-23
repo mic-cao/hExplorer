@@ -15,7 +15,7 @@ The **hExplorer** package provides functionalities to track US coastal storms us
 
 ## Installation
 
-You can install the Storm Tracker API R Package by downloading the `hExplorer` tar.gz file [here](link-to-tar-gz). After downloading, you can install the package in R using the following command:
+You can install the Storm Tracker API R Package by downloading the `hExplorer` tar.gz file [here](https://github.com/mic-cao/hExplorer/blob/main/hExplorer_0.1.0.tar.gz). After downloading, you can install the package in R using the following command:
 
 ```R
 install.packages("/path/to/hExplorer.tar.gz", repos = NULL, type = "source")
