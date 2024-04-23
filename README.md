@@ -26,31 +26,31 @@ install.packages("/path/to/hExplorer.tar.gz", repos = NULL, type = "source")
 `storm_track:` Given a vector of storm ids, return a map of the trajectories, or tracks, of all of the storms using the available data.
 
 ```R
-storm_track(storm_vec, show.legend = FALSE)
+hExplorer::storm_track(storm_vec, show.legend = FALSE)
 ```
 
 `storm_location:` Given the id of a storm, return a map of its trajectory and size over time.
 
 ```R
-storm_location(storm_id, show.track = FALSE, time.pt = NULL)
+hExplorer::storm_location(storm_id, show.track = FALSE, time.pt = NULL)
 ```
 
 `made_landfall:` Determine whether a storm made landfall given the id of a storm.
 
 ```R
-made_landfall(storm_id, time.pt = NULL)
+hExplorer::made_landfall(storm_id, time.pt = NULL)
 ```
 
 `interpolate:` Given the id of a storm, predict its longitude and latitude coordinates every 30 minutes using linear interpolation.
 
 ```R
-interpolate(storm_id)
+hExplorer::interpolate(storm_id)
 ```
 
 `cyclone_energy:` Compute the accumulated cyclone energy given an id of a storm.
 
 ```R
-cyclone_energy(storm_id)
+hExplorer::cyclone_energy(storm_id)
 ```
 ## Vignette
 
