@@ -21,6 +21,18 @@ You can install the `hExplorer` package by downloading the tar.gz file [here](ht
 install.packages("/path/to/hExplorer.tar.gz", repos = NULL, type = "source")
 ```
 
+## Function Descriptions
+
+### `storm_track`
+
+**Plotting the Storm Track**
+
+Given a vector of storm ids, return a map of the trajectories, or tracks, of all of the storms using the available data.
+
+```R
+storm_track(storm_vec, show.legend = FALSE)
+```
+
 ## Vignette
 
 The package includes a detailed vignette showcasing various functionalities and analyses. Here's an overview of what you'll find in the vignette:
