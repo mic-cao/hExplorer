@@ -21,7 +21,7 @@ You can install the `hExplorer` package by downloading the tar.gz file [here](ht
 install.packages("/path/to/hExplorer.tar.gz", repos = NULL, type = "source")
 ```
 
-## Function Descriptions
+## Important Functions
 
 `storm_track:` Given a vector of storm ids, return a map of the trajectories, or tracks, of all of the storms using the available data.
 
