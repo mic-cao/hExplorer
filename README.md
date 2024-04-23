@@ -23,7 +23,7 @@ install.packages("/path/to/hExplorer.tar.gz", repos = NULL, type = "source")
 
 ## Function Descriptions
 
-### `storm_track:` Given a vector of storm ids, return a map of the trajectories, or tracks, of all of the storms using the available data.
+- `storm_track:` Given a vector of storm ids, return a map of the trajectories, or tracks, of all of the storms using the available data.
 
 ```R
 storm_track(storm_vec, show.legend = FALSE)
