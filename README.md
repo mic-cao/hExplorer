@@ -3,7 +3,7 @@
 **Authors:** Michael Cao, Aristotle Kolefas
 
 ## Overview
-The **hExplorer** package provides functionalities to track US coastal storms using Atlantic basin tropical cyclone data. It enables users to interpolate and visualize the path of landfalling hurricanes, compute accumulated cyclone energy (ACE), and explore various storm characteristics.
+The `hExplorer` package provides functionalities to track US coastal storms using Atlantic basin tropical cyclone data. It enables users to interpolate and visualize the path of landfalling hurricanes, compute accumulated cyclone energy (ACE), and explore various storm characteristics.
 
 ## Key Features
 
@@ -15,7 +15,7 @@ The **hExplorer** package provides functionalities to track US coastal storms us
 
 ## Installation
 
-You can install the hExplorer Package by downloading the `hExplorer` tar.gz file [here](https://github.com/mic-cao/hExplorer/blob/main/hExplorer_0.1.0.tar.gz). After downloading, you can install the package in R using the following command:
+You can install the `hExplorer` package by downloading the tar.gz file [here](https://github.com/mic-cao/hExplorer/blob/main/hExplorer_0.1.0.tar.gz). After downloading, you can install the package in R using the following command:
 
 ```R
 install.packages("/path/to/hExplorer.tar.gz", repos = NULL, type = "source")
@@ -43,6 +43,6 @@ The package validates a media claim about tropical cyclones and climate change u
 
 ## Conclusion
 
-The hExplorer package offers a comprehensive suite of tools for analyzing and visualizing US coastal storm data. Whether you're a researcher studying tropical cyclones or a weather enthusiast curious about storm trends, this package provides valuable insights and functionalities.
+The `hExplorer` package offers a comprehensive suite of tools for analyzing and visualizing US coastal storm data. Whether you're a researcher studying tropical cyclones or a weather enthusiast curious about storm trends, this package provides valuable insights and functionalities.
 
 For detailed usage instructions and examples, please refer to the [vignette](https://github.com/mic-cao/hExplorer/blob/main/vignettes/vignette.Rmd) included with the package.
