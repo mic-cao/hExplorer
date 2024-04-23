@@ -3,7 +3,7 @@
 **Authors:** Michael Cao, Aristotle Kolefas
 
 ## Overview
-The **hExploere** package provides functionalities to track US coastal storms using Atlantic basin tropical cyclone data. It enables users to interpolate and visualize the path of landfalling hurricanes, compute accumulated cyclone energy (ACE), and explore various storm characteristics.
+The **hExploer** package provides functionalities to track US coastal storms using Atlantic basin tropical cyclone data. It enables users to interpolate and visualize the path of landfalling hurricanes, compute accumulated cyclone energy (ACE), and explore various storm characteristics.
 
 ## Key Features
 
