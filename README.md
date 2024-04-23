@@ -1,10 +1,9 @@
 # hExplorer: Storm Tracker API (An R Package)
 
-## Overview
-
 **Authors:** Michael Cao, Aristotle Kolefas
 
-**Description:** The **Storm Tracker API R Package** provides functionalities to track US coastal storms using Atlantic basin tropical cyclone data. It enables users to interpolate and visualize the path of landfalling hurricanes, compute accumulated cyclone energy (ACE), and explore various storm characteristics.
+## Overview
+The **hExploere** package provides functionalities to track US coastal storms using Atlantic basin tropical cyclone data. It enables users to interpolate and visualize the path of landfalling hurricanes, compute accumulated cyclone energy (ACE), and explore various storm characteristics.
 
 ## Key Features
 
