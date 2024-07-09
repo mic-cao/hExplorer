@@ -1,4 +1,4 @@
-# hExplorer: Storm Tracker API (An R Package)
+# hExplorer: Storm Tracker API (An R Library)
 
 **Authors:** Michael Cao, Aristotle Kolefas
 
